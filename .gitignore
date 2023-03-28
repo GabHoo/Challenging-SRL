@@ -1,2 +1,3 @@
-models
+models/openie-model.2020.03.26.tar.gz
+models/structured-prediction-srl-bert.2020.12.15.tar.gz
 Data/data_train.jsonl
