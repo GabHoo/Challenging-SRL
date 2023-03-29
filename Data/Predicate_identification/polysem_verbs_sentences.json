@@ -25,5 +25,7 @@
   "plant": ["The plant needs to be watered.", "He will plant a tree in the backyard."],
   "punch": ["The boxer delivered a hard punch to his opponent.", "She will punch holes in the paper."],
   "rock": ["The rock was too heavy to lift.", "They will rock the baby to sleep."],
-  "smoke": ["The smell of smoke filled the room.", "He will smoke a cigar after dinner."]
+  "smoke": ["The smell of smoke filled the room.", "He will smoke a cigar after dinner."],
+  "loan":["Me and Mary will ask a loan to her","They asked me to loan them some money"],
+  "lost":["I was lost","I lost my phone"]
 }
