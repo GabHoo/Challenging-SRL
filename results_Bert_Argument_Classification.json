@@ -1,1 +1,1 @@
-{"test": "failure_rate", "activepassive_sents": 0.0, "question_rephrase": 0.0}
+{"test": "failure_rate", "Pronouns_sents": 37.5, "NER_sents": 55.00000000000001, "activepassive_sents": 0.0, "question_rephrase": 0.0}

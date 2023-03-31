@@ -94,6 +94,7 @@ def evaluate_PI_inflections_MFT(predictor,data):
         s=data[v] 
         
         pred=predictor.predict(s)
+        #print(pred)
 
         verbs=get_identified_verbs(pred)
        
@@ -101,6 +102,8 @@ def evaluate_PI_inflections_MFT(predictor,data):
         if v not in verbs: #IF verb is not found in s1 but is found in 2 is correct!
             fails+=1
             print(f"Failed for: {s} did not detect {v}\n")
+            #print(v,verbs)
+
             continue
      
     return (fails)/len(data)*100
@@ -199,7 +202,7 @@ def evaluate_INV_sameArgs(preda,predp,verbose=True):
         
     best_verba = get_main_verb(preda)
     best_verbp = get_main_verb(predp)
-    
+
     da=get_dict_args(best_verba['description'])
     dp=get_dict_args(best_verbp['description'])
 
@@ -226,3 +229,13 @@ def evaluate_INV_sameArgs(preda,predp,verbose=True):
     return True
 
 
+def check_NER_tags(pred,golden):
+    """
+    Takes a list of golden tags and a prediction and returns True if the prediction is correct
+    """
+    v=[x['verb'] for x in pred['verbs']]
+    if (v==['saw']):
+        if (pred['verbs'][0]['tags']==golden):
+            return True
+    else:
+        return False
