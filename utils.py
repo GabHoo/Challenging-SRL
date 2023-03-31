@@ -1,3 +1,5 @@
+import re
+import json
 def get_identified_verbs(pred): 
     """This function returns a list of verbs that are identified in the prediction
     :pred is the output of predictor.predict()
@@ -102,3 +104,125 @@ def evaluate_PI_inflections_MFT(predictor,data):
             continue
      
     return (fails)/len(data)*100
+
+def evaluate_INV_alltags(pred1,pred2,verbose=False):
+  """
+  This functions matches the verbs and then control the tags of the verbs in two predictions. Verbs dont have to be the same tho!
+  """
+  if len(pred1['verbs'])!=len(pred2['verbs']) or len(pred1['verbs'])==0 or len(pred2['verbs'])==0:
+    if verbose:
+        print("Not the same number of verbs identified in the sentences! Might also be 0!")
+        print(pred1['words'],pred2['words'])
+        print("Verbs found: ",[x['verb'] for x in pred1['verbs']],[x['verb'] for x in pred2['verbs']],"\n")
+    return False
+
+  for v in zip(pred1['verbs'],pred2['verbs']): 
+      v1,v2=v      
+
+      if v1['tags']!=v2['tags']:
+        if verbose:
+            print(f"missmatch in tags for verbs [{v1['verb']} and {v2['verb']}]")
+            print(f"sentences: {v1['description']} and {v2['description']}")
+            print(f"tags: {v1['tags']} and {v2['tags']}")
+            print("\n\n")
+        return False
+
+      continue
+  return True
+
+
+def validate_INV_allverbs_ARGset(pred1,pred2,verbose=True):
+  """
+  This functions matches the verbs and check the unique set of arguments of the verb in two predictions
+  """
+  #assert pred1['words']==pred2['words'],f"ERROR, Comparing two different sentences"
+  if len(pred1['verbs'])!=len(pred2['verbs']):
+    if verbose:
+      print("not the same number of verbs were found!")
+      print(pred1['words'],pred2['words'])
+      print([x['verb'] for x in pred1['verbs']],[x['verb'] for x in pred2['verbs']],"\n")
+    return False
+
+  for v in zip(pred1['verbs'],pred2['verbs']): 
+      v1,v2=v
+      
+      if v1['verb']!=v2['verb']: #verbs should not change when propnouns are changing
+        if verbose:
+          print("missmatch in verb identification \n,v1['verb'] and v2['verb']\n")
+        return False
+      
+      
+      unique_tag1=get_unique_args(v1['tags'])
+
+      unique_tag2=get_unique_args(v2['tags'])
+
+      if unique_tag1!=unique_tag2:
+        if verbose:
+          print(f"missmatch in the arguments found tags of verb '{v1['verb']}'\n{v1['description']}\n{v2['description']}\n")
+        return False
+
+      continue
+  return True
+
+def get_unique_args(s):
+  """
+  Returns the unique arguments in a list of BIO tags.
+  """
+  return set([x[2:] for x in s if x!='O'])
+
+def get_dict_args(description):
+    """
+    Returns a dictionary of the arguments found in the description of a verb
+    Key is the argument, value is the span"""
+    args=re.findall(r'\[.*?\]',description)#take the string with brakets (arguments and V)
+    argsdict={}
+    for x in args:
+        l=(x[1:-1].split(":"))#split the string to get the key and value
+        key=l[0]
+        value=l[1].strip()
+        argsdict[key]=value
+    return argsdict
+
+def get_main_verb(pred):
+    max=1
+    for x in pred['verbs']:
+        if len(get_dict_args(x['description']))>max:
+            best_verb=x
+            max=len(get_dict_args(x['description']))
+    return best_verb
+
+def evaluate_INV_sameArgs(preda,predp,verbose=True):
+    """
+    This functions checks if the arguments of the main verb are the same in two predictions. focus on main verb.
+    Crefull, it only works for sentences with one verb and where the verb is regularly reabsformed with auxiliaries
+    """
+        
+    best_verba = get_main_verb(preda)
+    best_verbp = get_main_verb(predp)
+    
+    da=get_dict_args(best_verba['description'])
+    dp=get_dict_args(best_verbp['description'])
+
+    dp.pop("V")
+    da.pop("V")
+
+    if da.keys()!=dp.keys():
+        print("different arguments")
+        return False
+        
+
+    for k in da.keys():
+
+        words1 = set(da[k].lower().split())
+        words2 = set(dp[k].lower().split())
+
+        # Find the common words using the intersection method
+        common_words = words1.intersection(words2)
+        if (common_words):
+            #print(common_words) 
+            continue
+        else:
+            return False
+    return True
+
+
