@@ -36,6 +36,8 @@ def evaluate_PI_Polysem_DIR(predictor,data):
             print("\n")
     return (len(data)-correct)/len(data)*100
 
+
+
 def evaluate_PI_Contractions_INV(predictor,data):             
     """
     This function returns a failure rate (percentage) that represents how many coupled sentnece 
@@ -239,3 +241,21 @@ def check_NER_tags(pred,golden):
             return True
     else:
         return False
+    
+def find_roleset_MFT(sents,predictor,verboose=False):
+    """Takes a dict where every key is the noun/adj that introduces a rolesets and value is the sentence.
+        Model should detect them among the verbs list according to Propbank"""
+    fail=0
+    for x,s in sents.items():
+        roleset=x
+        pred=predictor.predict(s)
+        rolesets_found=[x['verb'] for x in pred['verbs']]
+
+        if roleset not in rolesets_found:
+            
+            if verboose:
+                print(f"[{x}] not detected from '{s}', only {rolesets_found} were found",rolesets_found)
+            
+            fail+=1
+
+    return fail/len(sents)*100    
