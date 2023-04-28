@@ -1,4 +1,7 @@
 {
     "test": "failure_rate",
-    "gerunds": 73.33333333333333
+    "contractions": 0.0,
+    "inflected_sentences": 2.857142857142857,
+    "polysemic_verbs": 3.4482758620689653,
+    "slang_verbs": 83.33333333333334
 }

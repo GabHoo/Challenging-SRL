@@ -1,1 +1,9 @@
-{"test": "failure_rate", "Pronouns_sents": 35.0, "NER_sents": 67.0, "sents_1_typos": 33.0, "sents_2_typos": 50.0, "sents_3_typos": 69.0, "sents_4_typos": 70.0, "activepassive_sents": 21.73913043478261, "question_rephrase": 7.142857142857142}
+{
+    "test": "failure_rate",
+    "sents_1_typos": 16.0,
+    "sents_2_typos": 38.0,
+    "sents_3_typos": 47.0,
+    "sents_4_typos": 52.0,
+    "FistNames": 38.0,
+    "Pronouns": 3.0
+}

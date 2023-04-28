@@ -1,5 +1,7 @@
 import re
 import json
+
+
 def get_identified_verbs(pred): 
     """This function returns a list of verbs that are identified in the prediction
     :pred is the output of predictor.predict()
@@ -7,7 +9,7 @@ def get_identified_verbs(pred):
     verbs=[x['verb'] for x in pred['verbs']]
     return verbs
 
-def evaluate_PI_Polysem_DIR(predictor,data):
+def evaluate_PI_Polysem_DIR(predictor,data,verbose=True):
     """
     This function return the failure rates percentage on a test set.
     :predictor is predictor object
@@ -16,7 +18,7 @@ def evaluate_PI_Polysem_DIR(predictor,data):
 
     returns failure rate
     """
-    correct=0
+    fail=0
     for v in data:
         s1,s2=data[v] 
         
@@ -26,60 +28,49 @@ def evaluate_PI_Polysem_DIR(predictor,data):
         v1=get_identified_verbs(pred1)
         v2=get_identified_verbs(pred2)
 
-        if v not in v1 and v in v2: #IF verb is not found in s1 but is found in 2 is correct!
-            correct+=1
+        if v in v1:#IF verb is not found in s1 but is found in 2 is correct!
+            fail+=1
+            if verbose:
+                print(f"Failed for: {s1} ... [{v}] found as a verb ")
             continue
-        else:
-            print(f"Failed for: [{s1}],[{s2}]. {v} in both did NOT chage the predicate identification")
-            print(v1,v2)
-            #print(f"{pred1['verbs']=} \n{pred2['verbs']=}")
-            print("\n")
-    return (len(data)-correct)/len(data)*100
+
+        if v not in v2:
+            fail+=1
+            if verbose:
+                print(f"Failed for: {s2} ... [{v}] not found as a verb")
+            continue   
+        
+    return fail/len(data)*100
 
 
 
-def evaluate_PI_Contractions_INV(predictor,data):             
+def evaluate_PI_contractions_INV(predictor,data,verboose=True):
     """
     This function returns a failure rate (percentage) that represents how many coupled sentnece 
     presents inconcitency in their tags of a contracted predicate. The idea is that a predictor should be able to identify a verb even if varieted.
     Matching is TAG BASED: The models must have predicted a verb in the given position (inflected verb), if not is a failure.
 
     :predictor
-    :data is a list of tupleslists where the nested lists are couple of sentence to be compared
+    :data is a list of lists where the nested lists are couple of sentence and their index to be compared
 
     returns a failure rate
     """
-
-    data=[(i,v[0],v[1]) for i,v in data.items()] #NECESSARY CONVERSION FROM FILE, ugly i know
-    
     fail=0
-    
-    for s in data:
-        s1,s2,i=s
+    for c,i in data:
+        s1,s2,index= c[0],c[1],i
         pred1=predictor.predict(s1)
         pred2=predictor.predict(s2)
 
         v1=get_identified_verbs(pred1)
         v2=get_identified_verbs(pred2)
 
-        if len(v1)!=len(v2):
-            print(f"Failure in {s1} | {s2}")
-            print(f"Different number of verbs found: {v1=} against {v2=}")
+        if pred1['words'][index] not in v1 and pred2['words'][index] not in v2:
             fail+=1
-            continue
+            if verboose:
+                print(f"{pred1['words'][index]} or {pred2['words'][index]} not found as verb in {v1=} or {v2=}")
 
-                
-        for v1,v2 in zip(pred1['verbs'],pred2['verbs']):
-            if v1['verb']!=v2['verb']: #we only compare the verbs that are not matching exactly (aka the contracted vs original)
-                if v1['tags'][i]!='B-V' or v2['tags'][i]!='B-V': #And if one of them is not found to be a verb, test fails
-                    fail+=1
-                    print(f"Failure in {s1} | {s2}")
-                    print(f"The alteration of verb {v1['verb']}/{v2['verb']} lead to a different labeling:\n")
-                    print(v1)
-                    print(v2)
-                    break   
-    
     return fail/len(data)*100
+
 
 
 def evaluate_PI_inflections_MFT(predictor,data):
@@ -254,8 +245,25 @@ def find_roleset_MFT(sents,predictor,verboose=False):
         if roleset not in rolesets_found:
             
             if verboose:
-                print(f"[{x}] not detected from '{s}', only {rolesets_found} were found",rolesets_found)
+                print(f"[{x}] not detected from '{s}', only {rolesets_found} were found")
             
             fail+=1
 
     return fail/len(sents)*100    
+
+
+def eval_full_sent_BIOtags(sents,labels,predictor,verb_indx=0,verbose=True):
+    """
+    This function evaluates the predictor by using the BIO tags of the predictions.
+    """
+    fails=0
+    for s in sents:
+        pred = predictor.predict(s)
+        if pred['verbs'][verb_indx]['tags'] != labels:
+            fails+=1
+            if verbose:
+                print("Sentence: ",s)
+                print("Predicted BIO tags: ",pred['verbs'][verb_indx]['tags'])
+                print("True BIO tags: ",labels)
+          
+    return (fails/len(sents)*100)
