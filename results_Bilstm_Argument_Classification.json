@@ -1,9 +1,5 @@
 {
-    "test": "failure_rate",
-    "sents_1_typos": 16.0,
-    "sents_2_typos": 38.0,
-    "sents_3_typos": 47.0,
-    "sents_4_typos": 52.0,
-    "FistNames": 38.0,
-    "Pronouns": 3.0
+    "test_name": "failure_rate",
+    "PP_INV": 50.0,
+    "PP_MFT": 45.18072289156627
 }

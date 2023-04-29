@@ -233,6 +233,15 @@ def check_NER_tags(pred,golden):
     else:
         return False
     
+def eval_NER(sentences,labels,predictor):
+    fails=0
+    for s in sentences:
+        pred=predictor.predict(s)
+        success=check_NER_tags(pred,labels)
+        if not success:
+            fails+=1
+    return fails/len(sentences)*100
+    
 def find_roleset_MFT(sents,predictor,verboose=False):
     """Takes a dict where every key is the noun/adj that introduces a rolesets and value is the sentence.
         Model should detect them among the verbs list according to Propbank"""
@@ -267,3 +276,107 @@ def eval_full_sent_BIOtags(sents,labels,predictor,verb_indx=0,verbose=True):
                 print("True BIO tags: ",labels)
           
     return (fails/len(sents)*100)
+
+def eval_full_sent_BIOtags(sents,labels,predictor,verb_indx=0,verbose=True): #verb_indx to 0 as it is often  the case that there is only one predicate
+    """
+    This function evaluates the predictor by using the BIO tags of the predictions.
+    """
+    fails=0
+    for s in sents:
+        #print(s)
+        pred = predictor.predict(s)
+        if not pred['verbs']: #no verb found
+            fails+=1
+            if verbose:
+                print("\n FAILED FOR Sentence: ",s)
+                print("no verbs found ")
+            continue
+            
+        pred_labels=pred['verbs'][verb_indx]['tags']
+   
+        if pred_labels != labels: #wrong prediction
+            fails+=1
+            if verbose:
+                print("\n FAILED FOR Sentence: ",s)
+                print("Predicted BIO tags: ",pred_labels)
+                print("True BIO tags: ",labels)
+          
+    return (fails/len(sents)*100)
+
+def eval_full_sent_BIOtags_INV(sentences,labels1,labels2,predictor,verbose=False):
+    """
+    This function evaluates the performance of the model on a list of couple of sentence for INV TEST.
+    :sentences is a dict where key is s1 and value is s2
+    :labels1 is the list of BIO tags for the first sentence
+    :labels2 is the list of BIO tags for the second sentence
+    :predictor is the predictor
+
+    returns the rate of failure
+    """
+   
+    fails=0
+    for a,p in sentences.items():
+        predA=predictor.predict(a)
+        predP=predictor.predict(p)
+        
+        if predA['verbs'][0]['tags']!=labels1 or predP['verbs'][1]['tags']!=labels2: #1 because we the auxiliary in position 0
+            print("Error")
+            fails+=1
+            print(predA['verbs'][0]['description'],"!=",labels1)
+            print(predP['verbs'][1]['description'],"!=",labels2)
+                
+            print("\n\n")
+
+    return fails/len(sentences)*100   
+
+def eval_PP_MFT(di,predictor,verbose=False):
+    """This function evaluates a big datasets of known PP attachment. 
+    They all refer to the noun thus the label to be predicted must be ['I-ARG1', 'I-ARG1']
+    structure of the sentence is always the same. 4 words where last two is PP"""
+    failure=0
+    for c in di:
+        pred=predictor.predict(c)
+        if not pred['verbs']:
+            failure+=1
+            if verbose:
+                print(f"verbs not found in sentence: {c}")
+            continue
+
+        pp_pred=pred['verbs'][0]['tags'][-2:]
+
+        if pp_pred!=['I-ARG1', 'I-ARG1']:
+            failure+=1
+            if verbose:
+                print(f"Input sentence: {c}")
+                print(f"Predicted labels for PP: {pp_pred} but should have been ['I-ARG1', 'I-ARG1']")
+            continue
+    
+    return failure/len(di)*100
+
+def eval_PP_INV(sentences,predictor,verbose=False):
+    """
+    Evaluate the model on the PP attachment  based on partial pos tags. Lables given are infact only the one of the PP
+    """
+    failure=0
+    for c in sentences:
+        s1,s2=c.keys()
+        pred1=predictor.predict(s1)
+        pred2=predictor.predict(s2)
+        labels1=c[s1]
+        labels2=c[s2]
+        ll1=len(labels1)
+        ll2=len(labels2)
+        if pred1['verbs'][0]['tags'][-ll1:]!=labels1:
+            failure+=1
+            if verbose:
+                print(f"Input sentences: {s1}")
+                print(f"Predicted labels for PP: {pred1['verbs'][0]['tags'][-ll1:]} but should have been {labels1}")
+            continue
+        if pred2['verbs'][0]['tags'][-ll2:]!=labels2:
+            failure+=1
+            if verbose:                             
+                print(f"Input sentences: {s2}")
+                print(f"Predicted labels for PP: {pred2['verbs'][0]['tags'][-ll2:]} but should have been {labels2}")
+                      
+
+    return failure/len(sentences)*100

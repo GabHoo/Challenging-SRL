@@ -1,0 +1,68 @@
+[
+    {
+        "I went to the resturant by the Hutson": [
+            "I-ARG4",
+            "I-ARG4",
+            "I-ARG4"
+        ],
+        "I went to the resturant by bike": [
+            "B-ARGM-MNR",
+            "I-ARGM-MNR"
+        ]
+    },
+    {
+        "I fixed the car with a red logo": [
+            "I-ARG1",
+            "I-ARG1",
+            "I-ARG1",
+            "I-ARG1"
+        ],
+        "I fixed the car with a hammer": [
+            "B-ARGM-MNR",
+            "I-ARGM-MNR",
+            "I-ARGM-MNR"
+        ]
+    },
+    {
+        "I bought a computer with GPU": [
+            "I-ARG1",
+            "I-ARG1"
+        ],
+        " I bought a computer with bitcoins": [
+            "B-ARGM-MNR",
+            "I-ARGM-MNR"
+        ]
+    },
+    {
+        "Lukas helps a man with a disability": [
+            "I-ARG2",
+            "I-ARG2",
+            "I-ARG2"
+        ],
+        "Lukas helps a man with a task": [
+            "B-ARG1",
+            "I-ARG1",
+            "I-ARG1"
+        ]
+    },
+    {
+        "I drink whiskey with soda": [
+            "I-ARG1",
+            "I-ARG1"
+        ],
+        "I drink whiskey with Jhon": [
+            "B-ARGM-COM",
+            "I-ARGM-COM"
+        ]
+    },
+    {
+        "They Buy a house in cash": [
+            "B-ARGM-MNR",
+            "I-ARGM-MNR"
+        ],
+        "They buy a house in decay": [
+            "I-ARG1",
+            "I-ARG1"
+        ]
+    }
+]
