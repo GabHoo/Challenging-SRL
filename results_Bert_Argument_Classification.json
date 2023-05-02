@@ -1,1 +1,14 @@
-{"test": "failure_rate", "Pronouns_sents": 37.5, "NER_sents": 55.00000000000001, "activepassive_sents": 0.0, "question_rephrase": 0.0}
+{
+    "test_name": "failure_rate",
+    "FistNames": 0.0,
+    "Pronouns": 0.0,
+    "PP_INV": 50.0,
+    "PP_MFT": 22.05971968312005,
+    "NER_sents": 46.0,
+    "longspan": 0.0,
+    "sents_1_typos": 14.000000000000002,
+    "sents_2_typos": 32.0,
+    "sents_3_typos": 47.0,
+    "sents_4_typos": 53.0,
+    "ActivePassive": 0.0
+}

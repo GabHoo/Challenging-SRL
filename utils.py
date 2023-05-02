@@ -334,24 +334,24 @@ def eval_PP_MFT(di,predictor,verbose=False):
     They all refer to the noun thus the label to be predicted must be ['I-ARG1', 'I-ARG1']
     structure of the sentence is always the same. 4 words where last two is PP"""
     failure=0
+    count=0
     for c in di:
         pred=predictor.predict(c)
         if not pred['verbs']:
-            failure+=1
-            if verbose:
-                print(f"verbs not found in sentence: {c}")
             continue
 
-        pp_pred=pred['verbs'][0]['tags'][-2:]
+        count+=1
 
-        if pp_pred!=['I-ARG1', 'I-ARG1']:
+        pp_pred=pred['verbs'][0]['tags'][-3:] #takes tag of last 3 words
+        args=[x.split("-")[0] if  "-" in x else x for x in pp_pred]
+        if args[0]!='B' or args[1]!='I' or args[2]!='I':
             failure+=1
             if verbose:
                 print(f"Input sentence: {c}")
-                print(f"Predicted labels for PP: {pp_pred} but should have been ['I-ARG1', 'I-ARG1']")
+                print(f"Predicted labels for nound and PP: {pp_pred}. Should have been B-I-I")
             continue
-    
-    return failure/len(di)*100
+        
+    return failure/count*100, count
 
 def eval_PP_INV(sentences,predictor,verbose=False):
     """
@@ -380,3 +380,31 @@ def eval_PP_INV(sentences,predictor,verbose=False):
                       
 
     return failure/len(sentences)*100
+
+def eval_spanDetection(sents,start_indx,end_indx,predictor,verbose=False):
+    """
+    This function evaluates the span detection task. It takes as input a list of sentences, a list of labels, the start and end index of the span.
+    If all element between the index are not detected in the same span, is a failure.
+    returns failure rate.
+    """
+    fails=0
+    for s in sents:
+        pred=predictor.predict(s)
+        preds=pred['verbs']
+        found=False
+        for p in preds: #looking for every predicate in the sentence
+            print(p)
+            span=p['tags'][start_indx:end_indx]
+            #print(span)
+            span=[x.split('-')[1] if x!='O' else 'O' for x in span]
+            print(span)
+            if len(set(span))==1: #if the span is all the same label
+                found=True
+            else:
+                continue
+        if found==False:
+            fails+=1
+            if verbose:
+                print("\nThe span was never detected")
+                print(pred)
+    return (fails/len(sents)*100)

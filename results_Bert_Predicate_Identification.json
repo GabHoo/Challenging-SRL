@@ -1,1 +1,9 @@
-{"test": "failure_rate", "contracted_sentences": 0.0, "inflected_sentences": 2.857142857142857, "polysemic_verbs": 6.896551724137931, "slang_verbs": 83.33333333333334, "new_verbs": 10.0}
+{
+    "test": "failure_rate",
+    "contractions": 0.0,
+    "inflected_sentences": 1.8867924528301887,
+    "polysemic_verbs": 3.4482758620689653,
+    "gerunds": 73.33333333333333,
+    "slang_verbs": 83.33333333333334,
+    "new_verbs": 10.0
+}
