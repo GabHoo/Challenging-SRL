@@ -5,8 +5,7 @@ This repo contains the code and the results for the project Checklisting SRL (pd
 
 The notebooks contain the code for generating and testing the models on the test set.
 
-Every cell is a test and shall be run for the model of interests. Results are autmatically saved in the file _results_$model_$task.json_
-_
+Every cell is a test and shall be run for the model of interests. Results are autmatically saved in the file results+[model]+[task].json
 
 
 
