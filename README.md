@@ -1,8 +1,10 @@
 # Checklisting SRL
 
 This repo contains the code and the results for the project Checklisting SRL (pdf available in the repo).
+
+
 ABSTRACT:
-'''
+
 Standard automatic evaluations of NLP sys-
 tems on a test split of data offer the advantage
 of comfortably comparing the performance be-
