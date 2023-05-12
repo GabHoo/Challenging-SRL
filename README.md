@@ -3,8 +3,14 @@
 This repo contains the code and the results for the project Checklisting SRL (pdf available in the repo).
 
 
-ABSTRACT:
+The notebooks contain the code for generating and testing the models on the test set.
 
+Every cell is a test and shall be run for the model of interests. Results are autmatically saved in the file results + task + model + .txt
+
+
+
+
+#### Abstract
 Standard automatic evaluations of NLP sys-
 tems on a test split of data offer the advantage
 of comfortably comparing the performance be-
@@ -28,9 +34,4 @@ and their performance discussed. Results re-
 veal that these models still struggle with some
 of their core capabilities when tested on these
 targeted test sentences.
-'''
-
-The notebooks contain the code for generating and testing the models on the test set.
-
-Every cell is a test and shall be run for the model of interests. Results are autmatically saved in the file results + task + model + .txt
 
